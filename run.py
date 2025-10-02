@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import signal
+import subprocess
 import sys
 import threading
 import time
@@ -36,6 +37,18 @@ WARNING_COLOR = "yellow"
 SUCCESS_COLOR = "green"
 DELINEATOR_COLOR = "bold white"
 GENSYN_COLOR = "bold magenta"
+
+
+def get_version() -> str:
+    cmd = "./blockassist-venv/bin/python scripts/get_version.py"
+    process = Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+    if process.returncode != 0:
+        CONSOLE.print(
+            f"Error getting version: {stderr.decode().strip()}", style=ERROR_COLOR
+        )
+        return "unknown"
+    return stdout.decode().strip()
 
 
 def create_logs_dir(clear_existing=True):
@@ -258,8 +271,6 @@ By Gensyn""",
         style=GENSYN_COLOR,
     )
 
-    CONSOLE.print(f"Version {version('blockassist')}", style=GENSYN_COLOR)
-
     if os.environ.get("HF_TOKEN") is None:
         logging.info("HF_TOKEN not found, prompting")
         CONSOLE.print(
@@ -283,6 +294,8 @@ By Gensyn""",
 
     CONSOLE.print("Setting up virtualenv...", style=LOG_COLOR)
     setup_venv()
+
+    CONSOLE.print(f"BlockAssist version: {get_version()}", style=GENSYN_COLOR)
 
     CONSOLE.print("Setting up Gradle...", style=LOG_COLOR)
     setup_gradle()
