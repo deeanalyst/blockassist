@@ -5,7 +5,7 @@ from pathlib import Path
 from huggingface_hub import HfApi
 
 from blockassist import telemetry
-from blockassist.globals import get_identifier, get_logger
+from blockassist.globals import get_logger
 
 _LOG = get_logger()
 
@@ -20,7 +20,7 @@ def _create_readme(model_path: Path, user_id: str | None = None) -> None:
         tags.append(user_id.replace("_", " "))
 
     # Create YAML front matter with tags
-    tags_yaml = "\n".join(f"  - {tag}" for tag in tags)
+    tags_yaml = "\n".join(f'  - "{tag}"' for tag in tags)
     front_matter = f"""\
 ---
 tags:
@@ -43,9 +43,9 @@ def upload_to_huggingface(
     model_path: Path,
     user_id: str,
     repo_id: str,
+    address_eoa: str,
     hf_token: str | None = None,
     chain_metadata_dict: dict | None = None,
-    address_eoa: str | None = None,
 ) -> str:
     """Uploads the model directory to HuggingFace.
     Args:
@@ -87,7 +87,7 @@ def upload_to_huggingface(
         _LOG.info(
             f"Successfully uploaded model to HuggingFace: {repo_id} with size {total_size / 1024 / 1024:.2f} MB ({ret.oid})"
         )
-        telemetry.push_telemetry_event_uploaded(total_size, user_id, repo_id)
+        telemetry.push_telemetry_event_uploaded(total_size, address_eoa, repo_id)
 
         if ret:
             return ret.oid
