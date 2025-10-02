@@ -7,6 +7,7 @@ import threading
 import time
 from subprocess import Popen
 from typing import Dict, Optional
+from importlib.metadata import version
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.progress import (
@@ -20,6 +21,7 @@ from rich.progress import (
 
 import psutil
 import readchar
+
 
 from daemon import PROCESSES, cleanup_processes, start_log_watcher
 
@@ -252,10 +254,11 @@ def run():
 ██║  ██║███████║███████║██║███████║   ██║
 ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝╚══════╝   ╚═╝
 
-By Gensyn
-        """,
+By Gensyn""",
         style=GENSYN_COLOR,
     )
+
+    CONSOLE.print(f"Version {version('blockassist')}", style=GENSYN_COLOR)
 
     if os.environ.get("HF_TOKEN") is None:
         logging.info("HF_TOKEN not found, prompting")
