@@ -30,7 +30,6 @@ from blockassist.episode import EpisodeRunner
 from blockassist.globals import (
     _DEFAULT_CHECKPOINT,
     _DEFAULT_EPISODES_S3_BUCKET,
-    get_identifier,
     get_logger,
     get_training_id,
 )
@@ -139,7 +138,7 @@ async def _main(cfg: DictConfig):
                 if upload_session_episodes_only:
                     _LOG.info("Uploading session episode zips!")
                     s3_uris = zip_and_upload_episodes(
-                        get_identifier(address_eoa),
+                        address_eoa,
                         checkpoint_dir,
                         _DEFAULT_EPISODES_S3_BUCKET,
                         episode_runner.evaluate_dirs,
@@ -147,7 +146,7 @@ async def _main(cfg: DictConfig):
                 else:
                     _LOG.info("Uploading all episode zips!")
                     s3_uris = zip_and_upload_all_episodes(
-                        get_identifier(address_eoa),
+                        address_eoa,
                         checkpoint_dir,
                         _DEFAULT_EPISODES_S3_BUCKET,
                     )
@@ -171,8 +170,9 @@ async def _main(cfg: DictConfig):
                     is_telemetry_enabled = not telemetry.is_telemetry_disabled()
                     git_ref = upload_to_huggingface(
                         model_path=Path(model_dir),
-                        user_id=get_identifier(address_eoa),
+                        user_id=address_eoa,
                         repo_id=hf_repo_id,
+                        address_eoa=address_eoa,
                         hf_token=hf_token,
                         chain_metadata_dict={
                             "eoa": cfg.get("address_account"),
