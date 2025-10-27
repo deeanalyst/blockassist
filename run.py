@@ -1,3 +1,4 @@
+import argparse
 import json
 import logging
 import os
@@ -8,6 +9,7 @@ import threading
 import time
 from subprocess import Popen
 from typing import Dict, Optional
+from dataclasses import dataclass
 from importlib.metadata import version
 from rich.console import Console
 from rich.markdown import Markdown
@@ -38,6 +40,9 @@ SUCCESS_COLOR = "green"
 DELINEATOR_COLOR = "bold white"
 GENSYN_COLOR = "bold magenta"
 
+@dataclass
+class Config:
+    reload_dependencies: bool
 
 def get_version() -> str:
     cmd = "./blockassist-venv/bin/python scripts/get_version.py"
@@ -79,6 +84,13 @@ def create_evaluate_dir():
     else:
         CONSOLE.print("Evaluate directory already exists", style=LOG_COLOR)
 
+def clear_venv():
+    logging.info("Running clear_venv")
+    cmd = "rm -rf blockassist-venv"
+    process = Popen(cmd, shell=True)
+    ret = process.wait()
+    if ret != 0:
+        sys.exit(ret)
 
 def setup_venv():
     logging.info("Running setup_venv")
@@ -236,7 +248,7 @@ def wait_for_login():
             time.sleep(1)
 
 
-def run():
+def run(config: Config):
     global TOTAL_TIME_PLAYED
     global EPISODES_PLAYED
     CONSOLE.print("Creating directories...", style=LOG_COLOR)
@@ -291,6 +303,10 @@ By Gensyn""",
 
         os.environ["HF_TOKEN"] = hf_token
         CONSOLE.print("✅ HF_TOKEN set successfully", style=SUCCESS_COLOR)
+
+    if config.reload_dependencies:
+        CONSOLE.print("Clearing existing virtualenv...", style=LOG_COLOR)
+        clear_venv()
 
     CONSOLE.print("Setting up virtualenv...", style=LOG_COLOR)
     setup_venv()
@@ -547,8 +563,14 @@ By Gensyn""",
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="BlockAssist")
+
+    parser.add_argument("--reload-dependencies", action="store_true", help="Reload dependencies")
+
+    args = parser.parse_args()
+    config = Config(**args.__dict__)
     try:
-        run()
+        run(config)
     except KeyboardInterrupt:
         pass
     finally:
