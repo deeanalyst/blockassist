@@ -10,15 +10,15 @@ name = "blockassist"
 description = "Distributed experiments built using the MBAG multiagent environment (https://github.com/cassidylaidlaw/minecraft-building-assistance-game)."
 readme = "README.md"
 requires-python = ">=3.10,<4.0"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
   "aiofiles",
   "boto3",
   "datasets",
   "eth-account",
   "hydra-core",
-  "mbag-gensyn[rllib,malmo]",
-  "numpy>=1.21,<1.22",
+  "mbag-gensyn[rllib,malmo]==0.0.7",
+  "numpy>=1.21,<1.27",
   "readchar",
   "requests",
   "six",
