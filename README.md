@@ -96,6 +96,61 @@ pyenv install 3.10
 pip install psutil readchar rich
 ```
 
+## GPU Acceleration (NVIDIA/Quadro GPUs)
+
+For faster training on Linux systems with NVIDIA or Quadro GPUs, install CUDA and ensure PyTorch uses GPU acceleration.
+
+**Step 1: Install NVIDIA Drivers**
+
+- Open "Software & Updates" > "Additional Drivers" tab.
+- Select the latest NVIDIA driver for your GPU and apply changes.
+- Reboot your system.
+
+Alternatively, via terminal:
+
+```bash
+sudo apt update
+sudo apt install nvidia-driver-XXX  # Replace XXX with your driver version, e.g., nvidia-driver-470
+sudo reboot
+```
+
+**Step 2: Install CUDA Toolkit**
+
+Download and install CUDA from NVIDIA's site (recommended for latest versions) or via apt:
+
+```bash
+sudo apt install nvidia-cuda-toolkit
+```
+
+Verify installation:
+
+```bash
+nvidia-smi
+nvcc --version
+```
+
+**Step 3: Install cuDNN (if required)**
+
+- Download cuDNN from NVIDIA (requires account).
+- Follow installation instructions to place libraries in `/usr/local/cuda/lib64/`.
+
+**Step 4: Install PyTorch with CUDA Support**
+
+BlockAssist uses PyTorch via RLlib. Install with CUDA:
+
+```bash
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118  # Adjust cu118 to your CUDA version
+```
+
+Verify GPU usage in Python:
+
+```python
+import torch
+print(torch.cuda.is_available())
+```
+
+If issues arise, ensure CUDA versions match PyTorch requirements (check https://pytorch.org/).
+
 ## Run BlockAssist
 
 Use `ls logs` to list available log files, and `tail -f logs/<name>.log` to monitor progress. 
