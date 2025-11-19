@@ -22,7 +22,7 @@ Steps:
 **Step 1: Clone the repo and enter the directory**
 
 ```bash
-git clone https://github.com/gensyn-ai/blockassist.git
+git clone https://github.com/deeanalyst/blockassist.git
 cd blockassist
 ```
 
