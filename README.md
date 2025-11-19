@@ -162,6 +162,11 @@ Use `ls logs` to list available log files, and `tail -f logs/<name>.log` to moni
 * On macOS: `pyenv exec python run.py`
 * On Linux: `python run.py`
 
+* Or use the Play Script
+  ```bash
+  ./play.sh
+  ```
+
 The program will install additional dependencies as required. Follow any prompts and approve any requests.
 
 **Hugging Face Token**
