@@ -85,10 +85,25 @@ class TrainingRunner:
         _LOG.info("Training started.")
         self.training_started.set()
 
-        _LOG.info("Conversion started!")
+        # CPU-friendly optimizations and startup speedups
+        try:
+            cpu_cores = max(1, min(4, (os.cpu_count() or 1)))
+            os.environ["OMP_NUM_THREADS"] = str(cpu_cores)
+            os.environ["OPENBLAS_NUM_THREADS"] = str(cpu_cores)
+            os.environ["MKL_NUM_THREADS"] = str(cpu_cores)
+        except Exception:
+            pass
+
         rllib_path = Path(self.checkpoint_dir) / ".." / "rllib"
-        shutil.rmtree(rllib_path, ignore_errors=True)
-        self.convert_result = run_convert_main()
+        if rllib_path.exists():
+            _LOG.info(
+                f"Existing rllib found at {rllib_path}; skipping conversion to save time."
+            )
+            self.convert_result = {"mbag_config": {}, "out_dir": str(rllib_path)}
+        else:
+            _LOG.info("Conversion started!")
+            shutil.rmtree(rllib_path, ignore_errors=True)
+            self.convert_result = run_convert_main()
 
     def after_training(self):
         _LOG.info("Training ended.")
